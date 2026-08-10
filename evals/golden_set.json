@@ -1,0 +1,146 @@
+{
+  "_readme": [
+    "Ten loan files with expected outcomes. Five are the seeded demo scenarios; five are",
+    "variants defined as dotted-path patches on a base scenario, so a variant is three lines",
+    "rather than a 120-line copy that drifts out of sync with its parent.",
+    "",
+    "The variants are chosen to exercise the boundaries the demo scenarios do not: an overlay",
+    "with no exception path, an exception path whose conditions are NOT met, a collateral",
+    "judgment where the free option should be declined, and a file that is not legally an",
+    "application at all. A golden set that only contains the happy paths measures nothing."
+  ],
+  "citation_cases": [
+    {
+      "id": "C1-ltv-lesser-of-supported",
+      "corpus": "fannie",
+      "section": "B2-1.2-01",
+      "claim": "loan-to-value on a purchase uses the lesser of sales price or appraised value",
+      "entailed": true
+    },
+    {
+      "id": "C2-ltv-greater-of-inversion",
+      "corpus": "fannie",
+      "section": "B2-1.2-01",
+      "claim": "loan-to-value on a purchase uses the greater of sales price or appraised value",
+      "entailed": false
+    }
+  ],
+  "cases": [
+    {
+      "id": "S1-clean-w2",
+      "base_scenario": 1,
+      "note": "baseline happy path; value acceptance exercised so the $600 never happens"
+    },
+    {
+      "id": "S2-self-employed-overlay-exception",
+      "base_scenario": 2,
+      "note": "DU eligible, overlay stricter, exception path satisfied"
+    },
+    {
+      "id": "S3-low-appraisal-deny",
+      "base_scenario": 3,
+      "note": "collateral shortfall; saga compensation and adverse action"
+    },
+    {
+      "id": "S4-duplicate-submission",
+      "base_scenario": 4,
+      "note": "idempotency; scored on decision like any other file"
+    },
+    {
+      "id": "S5-resume",
+      "base_scenario": 5,
+      "note": "employment gap; LOE condition makes it approved_with_conditions"
+    },
+
+    {
+      "id": "V1-score-below-overlay-minimum",
+      "base_scenario": 1,
+      "note": "OV-SCORE-01 has no exception path. DU would still approve; the overlay binds.",
+      "patch": {
+        "loan_id": "MER-2001",
+        "vendor_fixtures.credit.scores": {"equifax": 634, "experian": 641, "transunion": 655}
+      },
+      "expected": {
+        "decision": "denied",
+        "income_type": "w2",
+        "delegated_to_specialist": false,
+        "overlay_conflicts": 1,
+        "tools_expected": ["calc_w2_income", "pull_tri_merge", "submit_to_du", "calc_dti", "calc_ltv"],
+        "tools_forbidden": ["calc_self_employed_income"]
+      }
+    },
+    {
+      "id": "V2-self-employed-exception-not-met-reserves",
+      "base_scenario": 2,
+      "note": "DTI still over 43 but reserves are 3 months, so the OV-DTI-02 exception fails. The interesting case: an exception path exists and is NOT available.",
+      "patch": {
+        "loan_id": "MER-2002",
+        "borrower.reserves_months": 3
+      },
+      "expected": {
+        "decision": "denied",
+        "income_type": "self_employed",
+        "delegated_to_specialist": true,
+        "overlay_conflicts": 1,
+        "tools_expected": ["calc_self_employed_income", "pull_tri_merge", "submit_to_du", "calc_dti"],
+        "tools_forbidden": ["calc_w2_income"]
+      }
+    },
+    {
+      "id": "V3-self-employed-history-too-short",
+      "base_scenario": 2,
+      "note": "OV-SE-01 requires two years. 1.5 years fails, and the handoff must still happen.",
+      "patch": {
+        "loan_id": "MER-2003",
+        "borrower.years_self_employed": 1.5,
+        "borrower.reserves_months": 12
+      },
+      "expected": {
+        "decision": "denied",
+        "income_type": "self_employed",
+        "delegated_to_specialist": true,
+        "overlay_conflicts": 1,
+        "tools_expected": ["calc_self_employed_income", "pull_tri_merge", "submit_to_du"],
+        "tools_forbidden": ["calc_w2_income"]
+      }
+    },
+    {
+      "id": "V4-value-acceptance-declined-disaster-area",
+      "base_scenario": 1,
+      "note": "The offer is on the table and taking it would be wrong. OV-VA-01.4 — declared disaster area. Tests that the collateral agent declines a free option, which is the whole reason it is an agent.",
+      "patch": {
+        "loan_id": "MER-2004",
+        "property.in_disaster_area": true
+      },
+      "expected": {
+        "decision": "approved",
+        "income_type": "w2",
+        "delegated_to_specialist": false,
+        "value_acceptance_exercised": false,
+        "appraisal_ordered": true,
+        "overlay_conflicts": 0,
+        "tools_expected": ["calc_w2_income", "pull_tri_merge", "submit_to_du", "order_appraisal", "calc_ltv"],
+        "tools_forbidden": ["calc_self_employed_income"]
+      }
+    },
+    {
+      "id": "V5-not-an-application",
+      "base_scenario": 1,
+      "note": "The full SSN is not on file (only the last four digits), so under 12 CFR 1026.2(a)(3) this is not an application and the LE clock has not started. Nothing downstream should fire — no credit pull, no AUS, no appraisal.",
+      "patch": {
+        "loan_id": "MER-2005",
+        "borrower.ssn_on_file": false
+      },
+      "expected": {
+        "decision": "incomplete",
+        "income_type": "w2",
+        "delegated_to_specialist": false,
+        "overlay_conflicts": 0,
+        "tools_expected": [],
+        "tools_forbidden": ["pull_tri_merge", "submit_to_du", "order_appraisal", "lock_rate"]
+      }
+    }
+  ],
+  "variance_runs": 5,
+  "variance_cases": ["S1-clean-w2", "S2-self-employed-overlay-exception", "S3-low-appraisal-deny"]
+}

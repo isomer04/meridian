@@ -1,0 +1,126 @@
+{
+  "scenario_id": 3,
+  "loan_id": "MER-1003",
+  "name": "Second home, appraisal comes in low, LTV breaches the overlay — DENY",
+  "lands": "Saga compensation. The file has already cost money and taken market risk when the value comes back short, so the unwind runs in reverse: release the lock (relock at WORST-CASE pricing) then cancel the appraisal (post-inspection, so the $600 is NOT recovered). Adverse-action notice issued with a 30-day due date under ECOA/Reg B.",
+  "le_delivered": true,
+  "intent_to_proceed": true,
+  "expected": {
+    "decision": "denied",
+    "income_type": "w2",
+    "delegated_to_specialist": false,
+    "value_acceptance_exercised": false,
+    "appraisal_ordered": true,
+    "tools_expected": ["calc_w2_income", "pull_tri_merge", "submit_to_du", "order_appraisal", "calc_ltv", "calc_dti", "search_guidelines"],
+    "tools_forbidden": ["calc_self_employed_income"],
+    "overlay_conflicts": 1,
+    "compensation_order": ["lock_rate", "order_appraisal", "submit_to_aus", "pull_credit"],
+    "adverse_action_notice": true
+  },
+  "borrower": {
+    "name": "Alan Whitfield",
+    "ssn_last4": "3355",
+    "ssn_on_file": true,
+    "employer": "Cascade Medical Group",
+    "employment_type": "w2",
+    "years_at_employer": 9.0,
+    "base_annual": 210000,
+    "bonus_history": [18000, 22000],
+    "overtime_history": [],
+    "employment_gap_months": 0,
+    "reserves_months": 14,
+    "first_time_buyer": false,
+    "cash_available_beyond_down_payment": 4000
+  },
+  "property": {
+    "address": "7 Ridgeline Rd, Whitefish, MT 59937",
+    "type": "single_family_detached",
+    "occupancy": "second_home",
+    "units": 1,
+    "estimated_value": 475000,
+    "in_disaster_area": false,
+    "rural": true
+  },
+  "loan": {
+    "program": "conventional_conforming",
+    "purpose": "purchase",
+    "purchase_price": 475000,
+    "loan_amount": 380000,
+    "term_years": 30,
+    "note_rate": 7.0,
+    "annual_property_tax": 7200,
+    "annual_hazard_insurance": 2100,
+    "monthly_hoa": 300,
+    "monthly_mi": 0,
+    "subordinate_liens": 0
+  },
+  "documents": [
+    {"filename": "1003_urla.pdf", "type": "application", "extracted": {"name": "Alan Whitfield", "ssn": true, "loan_amount": 380000, "property_address": "7 Ridgeline Rd, Whitefish, MT 59937", "estimated_value": 475000}},
+    {"filename": "w2_2024.pdf", "type": "w2", "extracted": {"employer": "Cascade Medical Group", "wages": 232000, "year": 2024}},
+    {"filename": "w2_2023.pdf", "type": "w2", "extracted": {"employer": "Cascade Medical Group", "wages": 228000, "year": 2023}},
+    {"filename": "paystub_2025_11.pdf", "type": "paystub", "extracted": {"gross_ytd": 196000, "base_annual": 210000}},
+    {"filename": "purchase_contract.pdf", "type": "purchase_contract", "extracted": {"price": 475000, "close_date": "2026-01-30"}}
+  ],
+  "vendor_fixtures": {
+    "credit": {
+      "scores": {"equifax": 741, "experian": 745, "transunion": 752},
+      "housing_history_months": 60,
+      "derogatory": [],
+      "liabilities": [
+        {"creditor": "Wells Fargo Home Mortgage", "type": "installment", "monthly_payment": 2850, "balance": 410000, "months_remaining": 268},
+        {"creditor": "BMW Financial", "type": "installment", "monthly_payment": 780, "balance": 33000, "months_remaining": 36},
+        {"creditor": "Citi Double Cash", "type": "revolving", "monthly_payment": 210, "balance": 6100}
+      ]
+    },
+    "aus": {
+      "casefile_id": "DU-8841204",
+      "recommendation": "Approve",
+      "eligibility": "Eligible",
+      "verification_messages": [
+        "Verify base income of $210,000 annually.",
+        "The appraised value must support the loan-to-value ratio used in this submission."
+      ],
+      "conditions": [
+        "Obtain an appraisal reporting the market value of the subject property.",
+        "Verify reserves of at least two months of the qualifying payment for the second home.",
+        "Verify the payment and status of the existing mortgage on the borrower's primary residence."
+      ],
+      "value_acceptance": {
+        "offered": false,
+        "reason": "Value acceptance not offered — second home in a rural market with limited comparable sales data."
+      },
+      "risk_factors": [
+        "Second home occupancy",
+        "Rural property location",
+        "Submission relies on an estimated value pending appraisal"
+      ]
+    },
+    "amc": {
+      "order_id": "AMC-77410",
+      "appraised_value": 440000,
+      "turn_time_days": 14,
+      "condition": "C3",
+      "comparables": 3,
+      "inspection_performed": true,
+      "appraisal_notes": "Limited comparable sales within 5 miles; two comparables required a downward market adjustment. Reported value $440,000, below the $475,000 contract price."
+    },
+    "pricing": {
+      "lock_id": "LK-1003",
+      "rate": 7.0,
+      "points": 0.0,
+      "current_market_rate": 7.375
+    },
+    "voe": {
+      "employer": "Cascade Medical Group",
+      "status": "verified",
+      "start_date": "2016-08-01",
+      "continuance": "likely",
+      "response_days": 3
+    },
+    "vod": {
+      "accounts": [{"institution": "Schwab", "type": "checking", "balance": 99000}],
+      "total_verified_assets": 99000,
+      "large_deposits": []
+    }
+  }
+}

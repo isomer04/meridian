@@ -1,0 +1,99 @@
+research_guidelines:
+  name: research_guidelines
+  description: >
+    Answer each of the following questions from the guideline corpora.
+
+    Questions:
+    {questions}
+
+    Loan program: {program}
+
+    For each question:
+
+    1. Reformulate it as a guideline question if it is not already one.
+    2. Search. Always include the overlays corpus — overlays govern where they conflict with
+       agency guidance, so a retrieval without them cannot be sufficient. For a conventional
+       loan search the agency corpus and the overlays; the FHA handbook is not relevant and
+       pulling from it is a routing error.
+    3. Call the retrieval critique tool on what you got back. If it reports the retrieval is
+       insufficient, reformulate and search again. Stop after three rounds.
+    4. Answer, citing every section you relied on as corpus:SECTION.
+
+    Where you find a threshold, report the number. Where you find an exception path, report
+    every condition it requires — an exception quoted in part is worse than not finding it.
+
+    Cite only sections the search tool actually returned. Never construct a section
+    identifier.
+  expected_output: >
+    For each question: the question, a direct answer including any applicable threshold and
+    the full conditions of any exception path, the corpus:SECTION citations relied upon,
+    whether the retrieval was sufficient, and how many rounds it took.
+
+underwrite_file:
+  name: underwrite_file
+  description: >
+    Reconcile the DU findings against the internal overlays and decide this file.
+
+    Desktop Underwriter findings:
+    {aus_findings}
+
+    Computed figures — these are final, calculated in Python. Do not recalculate or adjust
+    them:
+      qualifying monthly income: {monthly_income}
+      debt-to-income (back end): {back_end_dti}
+      loan-to-value: {ltv}
+      representative credit score: {score}
+      reserves (months): {reserves}
+
+    File characteristics:
+      occupancy: {occupancy}
+      property type: {property_type}
+      income type: {income_type}
+      self-employment history (years): {years_self_employed}
+      mortgage insurance required: {mi_required}
+
+    Guideline research available to you:
+    {research}
+
+    Income analysis interpretation points:
+    {income_interpretation}
+
+    Work through it in this order.
+
+    First, note what DU concluded and be explicit that it establishes agency eligibility
+    only.
+
+    Second, test the file against each applicable overlay: minimum representative score for
+    this occupancy, maximum loan-to-value for this occupancy, maximum debt-to-income for this
+    income type, minimum reserves, self-employment history where relevant, and the
+    condominium project requirement where relevant. For every overlay you test, record a
+    citation whose claim states what the GUIDELINE says and whose applied_to field states
+    this file's figure. Do not put the file's figures in the claim — the corpus does not
+    contain them and the citation will not verify.
+
+    Third, for any overlay the file exceeds, record an overlay conflict. If that overlay has a
+    documented exception path, check every compensating factor it requires against the figures
+    above. If all are satisfied, grant the exception and add a prior-to-docs condition
+    recording precisely which factors you relied on. If any is not satisfied, or the overlay
+    has no exception path, the file is denied.
+
+    Fourth, carry the DU conditions and verification messages into your condition list, typed
+    correctly, and add conditions for anything the income interpretation flagged.
+
+    Fifth, decide:
+      - denied, if any overlay is exceeded without an available and satisfied exception;
+      - approved_with_conditions, if the file clears but carries at least one prior-to-docs
+        condition;
+      - approved, if the file clears and the remaining conditions are routine verification
+        items only.
+
+    If denied, list the specific principal reasons you relied upon. State them so a borrower
+    could act on them. Never reference a prohibited basis — race, colour, religion, national
+    origin, sex, marital status, age, or receipt of public assistance must not appear in your
+    reasoning at all.
+  expected_output: >
+    A structured decision record: the decision, a rationale that names the DU result and every
+    overlay tested, the typed condition list, the citation list with guideline claims and
+    applied_to figures kept separate, the overlay conflicts with their citations and whether
+    an exception was granted, and the adverse action reasons — non-empty if and only if the
+    decision is denied.

@@ -1,0 +1,59 @@
+judge_citation_entailment:
+  name: judge_citation_entailment
+  description: >
+    Decide whether the cited guideline section logically entails the asserted claim.
+
+    Guideline section:
+    {section_text}
+
+    Asserted claim:
+    {claim}
+
+    Pay special attention to negation, greater-versus-lesser comparisons, exceptions, and
+    reversed conditions. This task is reached only after deterministic existence and lexical
+    checks pass. Return false when the section contradicts the claim or does not establish it.
+  expected_output: >
+    A structured verdict with entailed (boolean) and a brief rationale.
+
+qc_review:
+  name: qc_review
+  description: >
+    Review this decision for citation integrity and ECOA / Regulation B compliance.
+
+    Decision: {decision}
+
+    Rationale:
+    {rationale}
+
+    Citations asserted (each has a claim about what the guideline says, and an applied_to
+    field recording this file's figures):
+    {citations}
+
+    Conditions issued:
+    {conditions}
+
+    Adverse action reasons stated:
+    {adverse_action_reasons}
+
+    Do the following.
+
+    1. For every citation, call the citation verification tool with the corpus, the section,
+       and the **claim** — not the applied_to text. Record a finding for any citation where
+       the section does not exist (severity high) or where the section text does not support
+       the claim (severity medium).
+
+    2. Read the rationale, the conditions and the adverse action reasons for any
+       prohibited-basis characteristic: race, colour, religion, national origin, sex, gender,
+       marital status, age, ethnicity, or receipt of public assistance. Record a critical
+       finding if any appears. Judge the words actually written — "agency" is not "age".
+
+    3. If the decision is denied, confirm the adverse action reasons are present and state
+       specific principal reasons a borrower could act on. Record a critical finding if they
+       are missing or generic. Add an informational finding noting the notice is due within
+       {adverse_action_days} days under ECOA / Regulation B.
+
+    Set passed to false if there is any critical or high finding, and true otherwise. Medium
+    findings are reported but do not on their own fail the review.
+  expected_output: >
+    A structured QC record: a list of findings each with severity, kind and detail, and a
+    boolean pass verdict.

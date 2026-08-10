@@ -1,0 +1,125 @@
+{
+  "scenario_id": 5,
+  "loan_id": "MER-1005",
+  "name": "Stretch — killed mid-flow, resumed from the ledger",
+  "lands": "The source-of-truth claim, demonstrated rather than asserted. The process is killed after the credit pull and the AUS submission. On restart, completed steps are reconstructed from saga_log alone — CrewAI's flow state is a cache, the ledger is the truth — and the credit bureau is NOT called again because the recorded idempotency key still resolves.",
+  "le_delivered": true,
+  "intent_to_proceed": true,
+  "expected": {
+    "decision": "approved_with_conditions",
+    "income_type": "w2",
+    "delegated_to_specialist": false,
+    "value_acceptance_exercised": true,
+    "appraisal_ordered": false,
+    "tools_expected": ["calc_w2_income", "pull_tri_merge", "submit_to_du", "calc_dti", "calc_ltv", "search_guidelines"],
+    "tools_forbidden": ["calc_self_employed_income", "order_appraisal"],
+    "overlay_conflicts": 0,
+    "bureau_calls_after_resume": 1
+  },
+  "borrower": {
+    "name": "Theo Lindqvist",
+    "ssn_last4": "1174",
+    "ssn_on_file": true,
+    "employer": "Harborline Freight",
+    "employment_type": "w2",
+    "years_at_employer": 1.5,
+    "base_annual": 98000,
+    "bonus_history": [6000],
+    "overtime_history": [9000, 7000],
+    "employment_gap_months": 4,
+    "reserves_months": 3,
+    "first_time_buyer": true
+  },
+  "property": {
+    "address": "512 Quarry St, Duluth, MN 55805",
+    "type": "single_family_detached",
+    "occupancy": "primary_residence",
+    "units": 1,
+    "estimated_value": 320000,
+    "in_disaster_area": false,
+    "rural": false
+  },
+  "loan": {
+    "program": "conventional_conforming",
+    "purpose": "purchase",
+    "purchase_price": 320000,
+    "loan_amount": 288000,
+    "term_years": 30,
+    "note_rate": 6.75,
+    "annual_property_tax": 3900,
+    "annual_hazard_insurance": 1400,
+    "monthly_hoa": 0,
+    "monthly_mi": 105,
+    "subordinate_liens": 0
+  },
+  "documents": [
+    {"filename": "1003_urla.pdf", "type": "application", "extracted": {"name": "Theo Lindqvist", "ssn": true, "loan_amount": 288000, "property_address": "512 Quarry St, Duluth, MN 55805", "estimated_value": 320000}},
+    {"filename": "w2_2024.pdf", "type": "w2", "extracted": {"employer": "Harborline Freight", "wages": 104000, "year": 2024}},
+    {"filename": "paystub_2025_11.pdf", "type": "paystub", "extracted": {"gross_ytd": 91000, "base_annual": 98000}},
+    {"filename": "gap_letter.pdf", "type": "letter_of_explanation", "extracted": {"gap_months": 4, "reason": "relocation between employers"}}
+  ],
+  "vendor_fixtures": {
+    "credit": {
+      "scores": {"equifax": 704, "experian": 712, "transunion": 718},
+      "housing_history_months": 18,
+      "derogatory": [],
+      "liabilities": [
+        {"creditor": "Ford Credit", "type": "installment", "monthly_payment": 410, "balance": 15900, "months_remaining": 44},
+        {"creditor": "Discover", "type": "revolving", "monthly_payment": 65, "balance": 2100}
+      ]
+    },
+    "aus": {
+      "casefile_id": "DU-8841492",
+      "recommendation": "Approve",
+      "eligibility": "Eligible",
+      "verification_messages": [
+        "Obtain a written explanation for the gap in employment history.",
+        "Verify base income of $98,000 annually."
+      ],
+      "conditions": [
+        "Provide a letter of explanation for the four-month employment gap.",
+        "Verify reserves of at least two months of the qualifying payment.",
+        "Provide evidence of mortgage insurance at the required coverage for a 90% LTV loan."
+      ],
+      "value_acceptance": {
+        "offered": true,
+        "type": "value_acceptance",
+        "basis": "DU issued value acceptance based on Fannie Mae's property data and the submitted estimated value",
+        "conditions": [
+          "The lender must not have reason to believe the estimated value is unsupported."
+        ]
+      },
+      "risk_factors": [
+        "Employment gap within the most recent two years",
+        "Reserves below three months of the qualifying payment",
+        "Loan-to-value above 85%"
+      ]
+    },
+    "amc": {
+      "order_id": "AMC-77620",
+      "appraised_value": 322000,
+      "turn_time_days": 9,
+      "condition": "C3",
+      "comparables": 4,
+      "appraisal_notes": "Not ordered in this scenario — value acceptance exercised."
+    },
+    "pricing": {
+      "lock_id": "LK-1005",
+      "rate": 6.75,
+      "points": 0.125,
+      "current_market_rate": 6.875
+    },
+    "voe": {
+      "employer": "Harborline Freight",
+      "status": "verified",
+      "start_date": "2024-06-03",
+      "continuance": "likely",
+      "response_days": 5
+    },
+    "vod": {
+      "accounts": [{"institution": "Wells Fargo", "type": "checking", "balance": 38400}],
+      "total_verified_assets": 38400,
+      "large_deposits": []
+    }
+  }
+}

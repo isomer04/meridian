@@ -1,0 +1,89 @@
+analyze_income:
+  name: analyze_income
+  description: >
+    Establish the monthly qualifying income for this borrower.
+
+    Income type determined at intake: {income_type}
+
+    Borrower record:
+    {borrower}
+
+    Your available tools for this file are listed in your tool list. They have been selected
+    for this borrower's employment type — if a calculator you expected is absent, it is
+    because it does not apply to this file.
+
+    If the income type is self_employed, this file requires a Schedule C / K-1 cash-flow
+    analysis, which is the specialist's work and not yours. Delegate it to the Self-Employed
+    Income Specialist and report their result. Set delegated_to_specialist to true.
+
+    Otherwise, call the calculator on your tool list and copy the qualifying figure it
+    returns exactly. Set delegated_to_specialist to false.
+
+    In either case, interpret the result. List every item that needs documenting or that
+    affects the reliability of the income: an employment gap, a declining variable-income
+    stream, a history shorter than two years, anything the calculator flagged in its notes.
+
+    Do not perform arithmetic yourself. The number in your output must be the number the
+    tool returned.
+  expected_output: >
+    A structured record containing the monthly qualifying income exactly as the calculator
+    returned it, the method used, whether the analysis was delegated to the specialist, a
+    list of interpretation points and documentation requirements, and a one-sentence
+    narrative.
+
+interpret_credit:
+  name: interpret_credit
+  description: >
+    Interpret the credit report and the computed ratios for this file.
+
+    Tri-merge report:
+    {credit}
+
+    Computed ratios (already calculated in Python from the report above — do not
+    recalculate or adjust these):
+    {dti}
+    {ltv}
+
+    Property occupancy: {occupancy}
+
+    Identify anything that affects eligibility: a representative score below the minimum for
+    this occupancy, derogatory items requiring seasoning, and the treatment of each excluded
+    liability. Explain the ratios in plain terms and note that the inquiry from this pull is
+    permanent on all three reports.
+  expected_output: >
+    A structured record with a list of flags — each naming a specific concern and, where an
+    overlay is implicated, the section identifier — and a short narrative explaining the
+    representative score and the ratios.
+
+decide_collateral:
+  name: decide_collateral
+  description: >
+    Decide whether to exercise the value acceptance offer, if one was made, or to order a
+    full appraisal.
+
+    Desktop Underwriter findings:
+    {aus_findings}
+
+    Property record:
+    {property}
+
+    First establish whether an offer of value acceptance is actually present in the findings.
+    If it is not, a full appraisal is required and you should say so and cite the relevant
+    section.
+
+    If an offer is present, use the guideline search tool to retrieve the overlay governing
+    when such an offer may and may not be exercised. Then work through the disqualifying
+    factors one at a time against the property record above: rural market or thin comparable
+    sales, unique or non-conforming property, second home or investment occupancy, declared
+    disaster area, and any indication the estimated value is unsupported.
+
+    If any disqualifier is present, decline the offer and order a full appraisal. If none is,
+    exercise the offer.
+
+    Name the factors you actually considered and cite the sections you relied on as
+    corpus:SECTION. Do not order the appraisal yourself — report your decision and the
+    orchestrator will act on it.
+  expected_output: >
+    A structured record with a boolean decision on whether to exercise the offer, a rationale
+    naming the specific factors considered, a list of any blockers found, and the
+    corpus:SECTION citations relied upon.

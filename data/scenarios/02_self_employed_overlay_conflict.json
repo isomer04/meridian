@@ -1,0 +1,128 @@
+{
+  "scenario_id": 2,
+  "loan_id": "MER-1002",
+  "name": "Self-employed, thin file, DTI ~44 — DU eligible but the overlay is stricter",
+  "lands": "income_analyst_agent hands off to the self-employed specialist. DU returns Approve/Eligible at a DTI the internal overlay does not permit, so the overlay binds and the agentic RAG has to surface the conflict and find the documented exception path.",
+  "le_delivered": true,
+  "intent_to_proceed": true,
+  "expected": {
+    "decision": "approved_with_conditions",
+    "income_type": "self_employed",
+    "delegated_to_specialist": true,
+    "value_acceptance_exercised": false,
+    "appraisal_ordered": true,
+    "tools_expected": ["calc_self_employed_income", "pull_tri_merge", "submit_to_du", "calc_dti", "calc_ltv", "search_guidelines", "order_appraisal"],
+    "tools_forbidden": ["calc_w2_income"],
+    "overlay_conflicts": 1
+  },
+  "borrower": {
+    "name": "Marisol Okafor",
+    "ssn_last4": "9082",
+    "ssn_on_file": true,
+    "employer": "Okafor Design Studio (sole proprietor)",
+    "employment_type": "self_employed",
+    "years_self_employed": 2.5,
+    "schedule_c_net": [110000, 114000],
+    "k1_ordinary": [],
+    "add_backs": {"depreciation": 6000, "business_use_of_home": 2200},
+    "deductions": {},
+    "employment_gap_months": 0,
+    "reserves_months": 8,
+    "first_time_buyer": false
+  },
+  "property": {
+    "address": "88 Kestrel Way, Unit 3B, Portland, OR 97209",
+    "type": "condominium",
+    "occupancy": "primary_residence",
+    "units": 1,
+    "estimated_value": 480000,
+    "in_disaster_area": false,
+    "rural": false,
+    "project_warrantable": true
+  },
+  "loan": {
+    "program": "conventional_conforming",
+    "purpose": "purchase",
+    "purchase_price": 480000,
+    "loan_amount": 432000,
+    "term_years": 30,
+    "note_rate": 6.875,
+    "annual_property_tax": 5400,
+    "annual_hazard_insurance": 1500,
+    "monthly_hoa": 0,
+    "monthly_mi": 160,
+    "subordinate_liens": 0
+  },
+  "documents": [
+    {"filename": "1003_urla.pdf", "type": "application", "extracted": {"name": "Marisol Okafor", "ssn": true, "loan_amount": 432000, "property_address": "88 Kestrel Way, Unit 3B, Portland, OR 97209", "estimated_value": 480000}},
+    {"filename": "1040_2024_with_schedule_c.pdf", "type": "tax_return", "extracted": {"year": 2024, "schedule_c_net_profit": 114000, "depreciation": 6000, "business_use_of_home": 2200}},
+    {"filename": "1040_2023_with_schedule_c.pdf", "type": "tax_return", "extracted": {"year": 2023, "schedule_c_net_profit": 110000, "depreciation": 6000, "business_use_of_home": 2200}},
+    {"filename": "ytd_pl_2025.pdf", "type": "profit_and_loss", "extracted": {"period": "2025-01-01..2025-10-31", "net_profit": 99500}},
+    {"filename": "bank_stmt_business_1of2.pdf", "type": "bank_statement", "extracted": {"ending_balance": 41200}}
+  ],
+  "vendor_fixtures": {
+    "credit": {
+      "scores": {"equifax": 735, "experian": 741, "transunion": 749},
+      "housing_history_months": 30,
+      "derogatory": [],
+      "liabilities": [
+        {"creditor": "Subaru Motors Finance", "type": "installment", "monthly_payment": 520, "balance": 24800, "months_remaining": 48},
+        {"creditor": "Navient", "type": "deferred_student_no_payment", "monthly_payment": 0, "balance": 36000},
+        {"creditor": "Amex Blue", "type": "revolving", "monthly_payment": 95, "balance": 2400}
+      ]
+    },
+    "aus": {
+      "casefile_id": "DU-8841119",
+      "recommendation": "Approve",
+      "eligibility": "Eligible",
+      "verification_messages": [
+        "Obtain two years of signed individual federal income tax returns including all schedules.",
+        "Obtain a year-to-date profit and loss statement for the business.",
+        "Verify the existence of the business within 30 calendar days of the note date."
+      ],
+      "conditions": [
+        "Document reserves equal to at least two months of the qualifying payment.",
+        "Provide evidence of mortgage insurance at the required coverage for a 90% LTV loan.",
+        "Obtain a condominium project review confirming the project is warrantable."
+      ],
+      "value_acceptance": {
+        "offered": false,
+        "reason": "Value acceptance not offered — self-employed income with limited business history and a condominium project requiring review."
+      },
+      "risk_factors": [
+        "Debt-to-income ratio above 43%",
+        "Self-employment history of less than five years",
+        "Loan-to-value above 85%"
+      ]
+    },
+    "amc": {
+      "order_id": "AMC-77291",
+      "appraised_value": 486000,
+      "turn_time_days": 11,
+      "condition": "C3",
+      "comparables": 3,
+      "appraisal_notes": "Condominium; three closed comparables within the subject project."
+    },
+    "pricing": {
+      "lock_id": "LK-1002",
+      "rate": 6.875,
+      "points": 0.25,
+      "current_market_rate": 7.0
+    },
+    "voe": {
+      "employer": "Okafor Design Studio",
+      "status": "verified_self_employed",
+      "start_date": "2023-05-15",
+      "continuance": "likely",
+      "response_days": 4
+    },
+    "vod": {
+      "accounts": [
+        {"institution": "First Republic", "type": "business_checking", "balance": 41200},
+        {"institution": "Vanguard", "type": "brokerage", "balance": 62000}
+      ],
+      "total_verified_assets": 103200,
+      "large_deposits": [{"date": "2025-09-12", "amount": 14500, "note": "client retainer — sourcing required"}]
+    }
+  }
+}

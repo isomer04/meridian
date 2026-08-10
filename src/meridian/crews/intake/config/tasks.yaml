@@ -1,0 +1,44 @@
+detect_application_completeness:
+  name: detect_application_completeness
+  description: >
+    Review the submitted file and determine whether all six pieces of information required
+    by 12 CFR 1026.2(a)(3) are present.
+
+    Borrower record:
+    {borrower}
+
+    Property record:
+    {property}
+
+    Loan request:
+    {loan}
+
+    Documents submitted:
+    {documents}
+
+    For each of the six items — name, income, Social Security number, property address,
+    estimated property value, loan amount — decide whether it is genuinely present in the
+    material above. An item is present only if it is actually there. Do not treat a
+    document that would normally contain an item as evidence that the item is present.
+
+    On the Social Security number specifically: the borrower record carries `ssn_on_file`,
+    which states whether the full number has been provided, and may separately carry
+    `ssn_last4` for display. Judge presence on `ssn_on_file`. The last four digits alone
+    are not the Social Security number and are not sufficient to order a credit report.
+
+    Then classify the income type:
+      - "w2" if the borrower is a salaried or hourly employee of someone else;
+      - "self_employed" if the borrower has an ownership interest of 25 percent or more,
+        files a Schedule C, or receives K-1 income from their own business;
+      - "mixed" if both are genuinely present.
+
+    Finally, list the distinct document types you were given.
+
+    Do not calculate income. Do not assess the loan. That is not your job and the
+    calculators are not on your tool list.
+  expected_output: >
+    A structured record stating, for each of the six pieces of information, whether it is
+    present; the income type as one of w2 / self_employed / mixed; the list of document
+    types submitted; and a one-paragraph narrative. If anything is missing, the narrative
+    must name each missing item explicitly and state that the Loan Estimate clock has not
+    started.

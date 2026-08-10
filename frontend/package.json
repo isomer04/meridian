@@ -1,0 +1,48 @@
+{
+  "name": "meridian-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "next dev",
+    "dev:stack": "uv run --project .. python scripts/run_stack.py",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "uv run --project .. python scripts/run_e2e.py",
+    "test:e2e:smoke": "uv run --project .. python scripts/run_e2e.py --config playwright.smoke.config.ts",
+    "test:axe": "playwright test --grep @axe",
+    "export:openapi": "uv run --project .. python -c \"import json; from pathlib import Path; from meridian.api.app import app; Path('openapi.json').write_text(json.dumps(app.openapi(), indent=2) + '\\n', encoding='utf-8')\"",
+    "generate:api-types": "npm run export:openapi && openapi-typescript openapi.json -o src/lib/api/openapi.ts --default-non-nullable false",
+    "check:api-types": "npm run generate:api-types && git diff --exit-code -- openapi.json src/lib/api/openapi.ts"
+  },
+  "dependencies": {
+    "lucide-react": "^1.31.0",
+    "next": "^16.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
+    "rehype-slug": "^6.0.0",
+    "remark-gfm": "^4.0.1"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.2",
+    "@playwright/test": "^1.55.0",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^22.10.5",
+    "@types/react": "^19.0.3",
+    "@types/react-dom": "^19.0.2",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.18.0",
+    "eslint-config-next": "^16.0.0",
+    "jsdom": "^25.0.1",
+    "openapi-typescript": "^7.13.0",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

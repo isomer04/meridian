@@ -1,0 +1,120 @@
+{
+  "scenario_id": 4,
+  "loan_id": "MER-1004",
+  "name": "Duplicate submission — the same file submitted twice",
+  "lands": "Idempotency. The processor double-clicks, or a retry fires, and the flow runs a second time against the same loan. The idempotency key derives from (loan_id | saga_step | attempt_epoch), NOT from the tool arguments the model produced, so the bureau call counter stays at 1. A second hard inquiry cannot be un-rung, which is why this guarantee cannot depend on a model emitting a stable SSN string.",
+  "le_delivered": true,
+  "intent_to_proceed": true,
+  "expected": {
+    "decision": "approved",
+    "income_type": "w2",
+    "delegated_to_specialist": false,
+    "value_acceptance_exercised": true,
+    "appraisal_ordered": false,
+    "tools_expected": ["calc_w2_income", "pull_tri_merge", "submit_to_du", "calc_dti", "calc_ltv", "search_guidelines"],
+    "tools_forbidden": ["calc_self_employed_income", "order_appraisal"],
+    "overlay_conflicts": 0,
+    "bureau_calls_after_two_runs": 1
+  },
+  "borrower": {
+    "name": "Priya Raghavan",
+    "ssn_last4": "6620",
+    "ssn_on_file": true,
+    "employer": "Lumen Analytics",
+    "employment_type": "w2",
+    "years_at_employer": 4.0,
+    "base_annual": 144000,
+    "bonus_history": [16000, 16000],
+    "overtime_history": [],
+    "employment_gap_months": 0,
+    "reserves_months": 9,
+    "first_time_buyer": true
+  },
+  "property": {
+    "address": "3305 Marigold Ln, Raleigh, NC 27607",
+    "type": "single_family_detached",
+    "occupancy": "primary_residence",
+    "units": 1,
+    "estimated_value": 545000,
+    "in_disaster_area": false,
+    "rural": false
+  },
+  "loan": {
+    "program": "conventional_conforming",
+    "purpose": "purchase",
+    "purchase_price": 545000,
+    "loan_amount": 436000,
+    "term_years": 30,
+    "note_rate": 6.625,
+    "annual_property_tax": 4800,
+    "annual_hazard_insurance": 1650,
+    "monthly_hoa": 45,
+    "monthly_mi": 0,
+    "subordinate_liens": 0
+  },
+  "documents": [
+    {"filename": "1003_urla.pdf", "type": "application", "extracted": {"name": "Priya Raghavan", "ssn": true, "loan_amount": 436000, "property_address": "3305 Marigold Ln, Raleigh, NC 27607", "estimated_value": 545000}},
+    {"filename": "w2_2024.pdf", "type": "w2", "extracted": {"employer": "Lumen Analytics", "wages": 160000, "year": 2024}},
+    {"filename": "w2_2023.pdf", "type": "w2", "extracted": {"employer": "Lumen Analytics", "wages": 158000, "year": 2023}},
+    {"filename": "paystub_2025_11.pdf", "type": "paystub", "extracted": {"gross_ytd": 134000, "base_annual": 144000}}
+  ],
+  "vendor_fixtures": {
+    "credit": {
+      "scores": {"equifax": 772, "experian": 779, "transunion": 781},
+      "housing_history_months": 24,
+      "derogatory": [],
+      "liabilities": [
+        {"creditor": "Honda Financial", "type": "installment", "monthly_payment": 395, "balance": 12400, "months_remaining": 32},
+        {"creditor": "Capital One Venture", "type": "revolving", "monthly_payment": 0, "balance": 1800}
+      ]
+    },
+    "aus": {
+      "casefile_id": "DU-8841377",
+      "recommendation": "Approve",
+      "eligibility": "Eligible",
+      "verification_messages": [
+        "Verify base income of $144,000 annually with a paystub dated within 30 days of the note date."
+      ],
+      "conditions": [
+        "Obtain a verbal verification of employment within 10 business days of closing.",
+        "Provide evidence of homeownership education if required by the product."
+      ],
+      "value_acceptance": {
+        "offered": true,
+        "type": "value_acceptance",
+        "basis": "DU issued value acceptance based on Fannie Mae's property data and the submitted estimated value",
+        "conditions": [
+          "The lender must not have reason to believe the estimated value is unsupported.",
+          "Property must not be located in a disaster-impacted area."
+        ]
+      },
+      "risk_factors": []
+    },
+    "amc": {
+      "order_id": "AMC-77503",
+      "appraised_value": 548000,
+      "turn_time_days": 7,
+      "condition": "C2",
+      "comparables": 5,
+      "appraisal_notes": "Not ordered in this scenario — value acceptance exercised."
+    },
+    "pricing": {
+      "lock_id": "LK-1004",
+      "rate": 6.625,
+      "points": 0.0,
+      "current_market_rate": 6.625
+    },
+    "voe": {
+      "employer": "Lumen Analytics",
+      "status": "verified",
+      "start_date": "2021-11-08",
+      "continuance": "likely",
+      "response_days": 2
+    },
+    "vod": {
+      "accounts": [{"institution": "Truist", "type": "checking", "balance": 142000}],
+      "total_verified_assets": 142000,
+      "large_deposits": []
+    }
+  }
+}
